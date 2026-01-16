@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PathFinder Status Check</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #0f172a 0%, #1e40af 50%, #06b6d4 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #06b6d4;
+            margin-bottom: 10px;
+        }
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        button {
+            background: linear-gradient(135deg, #06b6d4 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(6, 182, 212, 0.3);
+        }
+        .link {
+            display: inline-block;
+            margin: 10px 0;
+            padding: 10px 20px;
+            background: #f0f9ff;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #0369a1;
+            font-weight: 600;
+        }
+        .link:hover {
+            background: #e0f2fe;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 PathFinder Status Check</h1>
+        <p>Testing if your servers are running...</p>
+
+        <div id="frontend-status" class="status pending">
+            Frontend: Checking...
+        </div>
+
+        <div id="backend-status" class="status pending">
+            Backend: Checking...
+        </div>
+
+        <div style="margin-top: 30px;">
+            <h3>Quick Actions:</h3>
+            <button onclick="checkStatus()">🔄 Recheck Status</button>
+            <button onclick="openApp()">🚀 Open App</button>
+            <button onclick="openBackend()">🔧 Test Backend</button>
+        </div>
+
+        <div style="margin-top: 30px;">
+            <h3>Direct Links:</h3>
+            <a href="http://localhost:5173" target="_blank" class="link">
+                📱 Frontend (http://localhost:5173)
+            </a>
+            <br>
+            <a href="http://localhost:5000/api/health" target="_blank" class="link">
+                🔧 Backend Health (http://localhost:5000/api/health)
+            </a>
+        </div>
+
+        <div id="instructions" style="margin-top: 30px; display: none;">
+            <h3>✅ Next Steps:</h3>
+            <ol>
+                <li>Click "Open App" button above</li>
+                <li>You should see a dark blue login page</li>
+                <li>Click "Continue as Guest"</li>
+                <li>Start using PathFinder!</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        async function checkStatus() {
+            // Check Frontend
+            const frontendDiv = document.getElementById('frontend-status');
+            frontendDiv.textContent = 'Frontend: Checking...';
+            frontendDiv.className = 'status pending';
+
+            try {
+                const response = await fetch('http://localhost:5173');
+                if (response.ok) {
+                    frontendDiv.textContent = '✅ Frontend: Running on http://localhost:5173';
+                    frontendDiv.className = 'status success';
+                } else {
+                    frontendDiv.textContent = '⚠️ Frontend: Responded but with error';
+                    frontendDiv.className = 'status error';
+                }
+            } catch (error) {
+                frontendDiv.textContent = '❌ Frontend: Not running or not accessible';
+                frontendDiv.className = 'status error';
+            }
+
+            // Check Backend
+            const backendDiv = document.getElementById('backend-status');
+            backendDiv.textContent = 'Backend: Checking...';
+            backendDiv.className = 'status pending';
+
+            try {
+                const response = await fetch('http://localhost:5000/api/health');
+                const data = await response.json();
+                if (data.status === 'healthy') {
+                    backendDiv.textContent = '✅ Backend: Running on http://localhost:5000';
+                    backendDiv.className = 'status success';
+                    document.getElementById('instructions').style.display = 'block';
+                } else {
+                    backendDiv.textContent = '⚠️ Backend: Responded but unhealthy';
+                    backendDiv.className = 'status error';
+                }
+            } catch (error) {
+                backendDiv.textContent = '❌ Backend: Not running or not accessible';
+                backendDiv.className = 'status error';
+            }
+        }
+
+        function openApp() {
+            window.open('http://localhost:5173', '_blank');
+        }
+
+        function openBackend() {
+            window.open('http://localhost:5000/api/health', '_blank');
+        }
+
+        // Auto-check on load
+        window.addEventListener('load', checkStatus);
+    </script>
+</body>
+</html>

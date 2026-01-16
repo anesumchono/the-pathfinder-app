@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import { GraduationCap, BookOpen, TrendingUp, Home, Heart, Target, Sparkles, Award, Lightbulb, Users, Building2, Briefcase, DollarSign } from 'lucide-react';
 import InstallPWA from './components/InstallPWA';
+import UserProfile from './components/UserProfile';
+import GoogleAuth from './components/GoogleAuth';
 
 const PathFinderApp = () => {
+  const [user, setUser] = useState<any>(null);
   const [step, setStep] = useState(0);
   const [analyzing, setAnalyzing] = useState(false);
   const [results, setResults] = useState(null);
+  const [userName, setUserName] = useState('');
   
   const [formData, setFormData] = useState({
     // Academic Stream
@@ -30,6 +35,178 @@ const PathFinderApp = () => {
     physicalHealth: '', mentalHealth: '', motivationLevel: '', careerInterest: '',
     favoriteSubjects: [], skills: [], hobbies: ''
   });
+
+  // Check for saved user on mount
+  useEffect(() => {
+    const savedUser = localStorage.getItem('pathfinder_user');
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+  }, []);
+
+  const handleLoginSuccess = (userData: any) => {
+    setUser(userData);
+    localStorage.setItem('pathfinder_user', JSON.stringify(userData));
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    localStorage.removeItem('pathfinder_user');
+    setResults(null);
+    setStep(0);
+  };
+
+  // Show login page if not authenticated
+  if (!user) {
+    const handleStartJourney = () => {
+      if (userName.trim()) {
+        handleLoginSuccess({ 
+          name: userName.trim(), 
+          email: `${userName.toLowerCase().replace(/\s+/g, '')}@pathfinder.app`, 
+          isGuest: false 
+        });
+      } else {
+        alert('Please enter your name to continue');
+      }
+    };
+
+    // Google OAuth Client ID - Replace with your actual Client ID
+    const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID_HERE";
+
+    return (
+      <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+        <div className="min-h-screen bg-gradient-radial relative overflow-hidden">
+          {/* Animated background elements */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl -top-48 -left-48 animate-float"></div>
+            <div className="absolute w-96 h-96 bg-blue-500/10 rounded-full blur-3xl -bottom-48 -right-48 animate-float" style={{animationDelay: '1s'}}></div>
+            <div className="absolute w-96 h-96 bg-purple-500/10 rounded-full blur-3xl top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-float" style={{animationDelay: '2s'}}></div>
+          </div>
+
+          <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
+            <div className="max-w-md w-full">
+              {/* Logo and branding */}
+              <div className="text-center mb-8 animate-float">
+                <div className="inline-flex items-center justify-center w-24 h-24 bg-linear-to-br from-cyan-400 to-blue-600 rounded-3xl mb-6 shadow-2xl relative">
+                  <div className="absolute inset-0 bg-linear-to-br from-cyan-400 to-blue-600 rounded-3xl animate-pulse opacity-50"></div>
+                  <GraduationCap className="w-14 h-14 text-white relative z-10" />
+                </div>
+                <h1 className="text-5xl font-bold mb-3">
+                  <span className="gradient-text">PathFinder</span>
+                </h1>
+                <p className="text-cyan-100 text-lg font-medium">Discover Your Perfect Career Path</p>
+                <div className="flex items-center justify-center gap-2 mt-4">
+                  <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
+                  <p className="text-cyan-200 text-sm">AI-Powered Career Guidance</p>
+                  <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
+                </div>
+              </div>
+
+              {/* Login card */}
+              <div className="glass-effect rounded-3xl shadow-2xl p-8 backdrop-blur-xl">
+                <div className="space-y-6">
+                  {/* Google Sign-In */}
+                  <div>
+                    <p className="text-sm font-semibold text-slate-600 mb-3 text-center">Sign in with</p>
+                    <div className="flex justify-center">
+                      <GoogleAuth onLoginSuccess={handleLoginSuccess} />
+                    </div>
+                  </div>
+
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t-2 border-slate-200"></div>
+                    </div>
+                    <div className="relative flex justify-center">
+                      <span className="px-4 bg-white text-sm font-medium text-slate-500">Or continue with</span>
+                    </div>
+                  </div>
+
+                  {/* Name Input */}
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-3">
+                      What's your name?
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={userName}
+                        onChange={(e) => setUserName(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && handleStartJourney()}
+                        placeholder="Enter your full name"
+                        className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100 focus:outline-none transition-all text-slate-800 placeholder-slate-400 font-medium shadow-sm"
+                      />
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                        <Sparkles className="w-5 h-5 text-cyan-500" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handleStartJourney}
+                    className="w-full py-4 px-6 bg-linear-to-r from-cyan-500 to-blue-600 text-white rounded-2xl font-bold text-lg shadow-lg hover:shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all relative overflow-hidden group"
+                  >
+                    <span className="relative z-10 flex items-center justify-center gap-2">
+                      Start Your Journey
+                      <Target className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
+                    </span>
+                    <div className="absolute inset-0 bg-linear-to-r from-blue-600 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  </button>
+
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-slate-200"></div>
+                    </div>
+                    <div className="relative flex justify-center">
+                      <span className="px-4 bg-white text-xs font-medium text-slate-400">Quick access</span>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => handleLoginSuccess({ name: 'Guest User', email: 'guest@pathfinder.app', isGuest: true })}
+                    className="w-full py-3 px-4 border-2 border-slate-200 text-slate-700 rounded-2xl font-semibold hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm"
+                  >
+                    Continue as Guest
+                  </button>
+                </div>
+
+                <div className="mt-6 pt-6 border-t border-slate-100">
+                  <p className="text-xs text-slate-500 text-center leading-relaxed">
+                    By continuing, you agree to our{' '}
+                    <span className="text-cyan-600 font-semibold cursor-pointer hover:underline">Terms of Service</span>
+                    {' '}and{' '}
+                    <span className="text-cyan-600 font-semibold cursor-pointer hover:underline">Privacy Policy</span>
+                  </p>
+                </div>
+              </div>
+
+              {/* Features */}
+              <div className="mt-8 grid grid-cols-3 gap-4 text-center">
+                <div className="glass-effect rounded-2xl p-4 hover:scale-105 transition-transform">
+                  <div className="w-10 h-10 bg-cyan-500/20 rounded-xl flex items-center justify-center mx-auto mb-2">
+                    <Sparkles className="w-5 h-5 text-cyan-400" />
+                  </div>
+                  <p className="text-xs font-semibold text-white">AI-Powered</p>
+                </div>
+                <div className="glass-effect rounded-2xl p-4 hover:scale-105 transition-transform">
+                  <div className="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center mx-auto mb-2">
+                    <Target className="w-5 h-5 text-blue-400" />
+                  </div>
+                  <p className="text-xs font-semibold text-white">Personalized</p>
+                </div>
+                <div className="glass-effect rounded-2xl p-4 hover:scale-105 transition-transform">
+                  <div className="w-10 h-10 bg-purple-500/20 rounded-xl flex items-center justify-center mx-auto mb-2">
+                    <TrendingUp className="w-5 h-5 text-purple-400" />
+                  </div>
+                  <p className="text-xs font-semibold text-white">Track Progress</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </GoogleOAuthProvider>
+    );
+  }
 
   const sections = [
     {
@@ -246,11 +423,11 @@ const PathFinderApp = () => {
   const currentSection = getCurrentSections()[step];
   const Icon = currentSection?.icon;
   const colorClasses = {
-    blue: 'from-blue-500 to-cyan-500',
-    green: 'from-green-500 to-emerald-500',
-    purple: 'from-purple-500 to-indigo-500',
-    red: 'from-red-500 to-pink-500',
-    amber: 'from-amber-500 to-orange-500'
+    blue: 'from-cyan-500 to-blue-600',
+    green: 'from-emerald-500 to-teal-600',
+    purple: 'from-purple-500 to-violet-600',
+    red: 'from-rose-500 to-pink-600',
+    amber: 'from-amber-500 to-orange-600'
   };
 
   // Prevent moving to academic performance without selecting stream
@@ -263,15 +440,25 @@ const PathFinderApp = () => {
 
   if (results) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-indigo-50 via-purple-50 to-pink-50 p-3 sm:p-6">
-        <div className="max-w-7xl mx-auto w-full">
-          <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-6 md:p-10 border border-slate-200">
-            <div className="text-center mb-6 sm:mb-10">
-              <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-linear-to-br from-indigo-500 to-purple-600 rounded-full mb-3 sm:mb-4 shadow-lg">
-                <GraduationCap className="w-10 h-10 sm:w-12 sm:h-12 text-white" />
+      <div className="min-h-screen bg-gradient-radial p-3 sm:p-6 relative overflow-hidden">
+        {/* Animated background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl top-0 right-0 animate-float"></div>
+          <div className="absolute w-96 h-96 bg-blue-500/5 rounded-full blur-3xl bottom-0 left-0 animate-float" style={{animationDelay: '1.5s'}}></div>
+        </div>
+
+        <div className="max-w-7xl mx-auto w-full relative z-10">
+          <div className="glass-effect rounded-3xl shadow-2xl p-4 sm:p-6 md:p-10">
+            <div className="flex justify-between items-start mb-6 sm:mb-10">
+              <div className="text-center flex-1">
+                <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-linear-to-br from-cyan-500 to-blue-600 rounded-2xl mb-3 sm:mb-4 shadow-xl relative">
+                  <div className="absolute inset-0 bg-linear-to-br from-cyan-400 to-blue-500 rounded-2xl animate-pulse opacity-50"></div>
+                  <GraduationCap className="w-10 h-10 sm:w-12 sm:h-12 text-white relative z-10" />
+                </div>
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold gradient-text mb-2">PathFinder</h1>
+                <p className="text-base sm:text-lg md:text-xl text-slate-600 font-medium">Your Personalized Career Roadmap</p>
               </div>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-linear-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">PathFinder</h1>
-              <p className="text-base sm:text-lg md:text-xl text-slate-600">Your Personalized Career Roadmap</p>
+              <UserProfile user={user} onLogout={handleLogout} />
             </div>
 
             {results.error ? (
@@ -489,20 +676,27 @@ const PathFinderApp = () => {
 
   if (analyzing) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-8 sm:p-12 md:p-16 text-center border border-slate-200 max-w-md w-full">
-          <div className="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-6 sm:mb-8">
-            <div className="absolute inset-0 bg-linear-to-r from-indigo-500 to-purple-600 rounded-full animate-ping opacity-20"></div>
-            <div className="relative bg-linear-to-r from-indigo-500 to-purple-600 rounded-full w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center animate-pulse">
-              <GraduationCap className="w-10 h-10 sm:w-12 sm:h-12 text-white" />
+      <div className="min-h-screen bg-gradient-radial flex items-center justify-center p-4 relative overflow-hidden">
+        {/* Animated background */}
+        <div className="absolute inset-0">
+          <div className="absolute w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-float"></div>
+          <div className="absolute w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-float right-0" style={{animationDelay: '1s'}}></div>
+        </div>
+
+        <div className="glass-effect rounded-3xl shadow-2xl p-8 sm:p-12 md:p-16 text-center max-w-md w-full relative z-10">
+          <div className="relative w-24 h-24 sm:w-32 sm:h-32 mx-auto mb-6 sm:mb-8">
+            <div className="absolute inset-0 bg-linear-to-r from-cyan-500 to-blue-600 rounded-full animate-ping opacity-20"></div>
+            <div className="absolute inset-0 bg-linear-to-r from-cyan-400 to-blue-500 rounded-full animate-pulse opacity-30"></div>
+            <div className="relative bg-linear-to-r from-cyan-500 to-blue-600 rounded-full w-24 h-24 sm:w-32 sm:h-32 flex items-center justify-center shadow-2xl">
+              <GraduationCap className="w-12 h-12 sm:w-16 sm:h-16 text-white animate-pulse" />
             </div>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-bold bg-linear-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2 sm:mb-3">Analyzing Your Profile</h2>
-          <p className="text-slate-600 text-base sm:text-lg">PathFinder AI is mapping your career journey...</p>
-          <div className="mt-4 sm:mt-6 flex justify-center space-x-2">
-            <div className="w-3 h-3 bg-indigo-500 rounded-full animate-bounce" style={{animationDelay: '0s'}}></div>
-            <div className="w-3 h-3 bg-purple-500 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
-            <div className="w-3 h-3 bg-pink-500 rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></div>
+          <h2 className="text-2xl sm:text-3xl font-bold gradient-text mb-3">Analyzing Your Profile</h2>
+          <p className="text-slate-600 text-base sm:text-lg font-medium mb-6">PathFinder AI is mapping your career journey...</p>
+          <div className="flex justify-center space-x-3">
+            <div className="w-3 h-3 bg-cyan-500 rounded-full animate-bounce shadow-lg"></div>
+            <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce shadow-lg" style={{animationDelay: '0.2s'}}></div>
+            <div className="w-3 h-3 bg-cyan-600 rounded-full animate-bounce shadow-lg" style={{animationDelay: '0.4s'}}></div>
           </div>
         </div>
       </div>
@@ -510,16 +704,26 @@ const PathFinderApp = () => {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-indigo-50 via-purple-50 to-pink-50 p-3 sm:p-6">
+    <div className="min-h-screen bg-gradient-radial p-3 sm:p-6 relative overflow-hidden">
       <InstallPWA />
-      <div className="max-w-6xl mx-auto w-full">
-        <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-6 md:p-10 border border-slate-200">
-          <div className="text-center mb-6 sm:mb-10">
-            <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-linear-to-br from-indigo-500 to-purple-600 rounded-full mb-3 sm:mb-4 shadow-lg animate-pulse">
-              <GraduationCap className="w-10 h-10 sm:w-12 sm:h-12 text-white" />
+      {/* Animated background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl top-0 right-0 animate-float"></div>
+        <div className="absolute w-96 h-96 bg-blue-500/5 rounded-full blur-3xl bottom-0 left-0 animate-float" style={{animationDelay: '1.5s'}}></div>
+      </div>
+
+      <div className="max-w-6xl mx-auto w-full relative z-10">
+        <div className="glass-effect rounded-3xl shadow-2xl p-4 sm:p-6 md:p-10">
+          <div className="flex justify-between items-start mb-6 sm:mb-10">
+            <div className="text-center flex-1">
+              <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-linear-to-br from-cyan-500 to-blue-600 rounded-2xl mb-3 sm:mb-4 shadow-xl relative animate-float">
+                <div className="absolute inset-0 bg-linear-to-br from-cyan-400 to-blue-500 rounded-2xl animate-pulse opacity-50"></div>
+                <GraduationCap className="w-10 h-10 sm:w-12 sm:h-12 text-white relative z-10" />
+              </div>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold gradient-text mb-2">PathFinder</h1>
+              <p className="text-sm sm:text-base md:text-lg text-slate-600 font-medium">Discover Your Perfect Career Path</p>
             </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-linear-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">PathFinder</h1>
-            <p className="text-sm sm:text-base md:text-lg text-slate-600">Discover Your Perfect Career Path</p>
+            <UserProfile user={user} onLogout={handleLogout} />
           </div>
 
           <div className="mb-6 sm:mb-10">
