@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PathFinder Icon Generator</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        canvas {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            display: block;
+            margin: 20px auto;
+            cursor: pointer;
+        }
+        .controls {
+            display: grid;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        label {
+            font-weight: 600;
+            color: #333;
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        .info {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid #667eea;
+        }
+        .info h3 {
+            margin-top: 0;
+            color: #667eea;
+        }
+        .size-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .size-btn {
+            padding: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎓 PathFinder Icon Generator</h1>
+        <p class="subtitle">Create your PWA app icon in seconds!</p>
+
+        <div class="controls">
+            <div>
+                <label>Icon Text:</label>
+                <input type="text" id="iconText" value="PF" maxlength="3">
+            </div>
+            <div>
+                <label>Icon Size:</label>
+                <select id="iconSize">
+                    <option value="512">512x512 (Recommended)</option>
+                    <option value="384">384x384</option>
+                    <option value="192">192x192</option>
+                    <option value="152">152x152</option>
+                    <option value="144">144x144</option>
+                    <option value="128">128x128</option>
+                    <option value="96">96x96</option>
+                    <option value="72">72x72</option>
+                </select>
+            </div>
+        </div>
+
+        <canvas id="iconCanvas" width="512" height="512"></canvas>
+
+        <button onclick="downloadIcon()">📥 Download Icon</button>
+
+        <div class="size-buttons">
+            <button class="size-btn" onclick="downloadAllSizes()">Download All Sizes</button>
+            <button class="size-btn" onclick="setSize(512)">512px</button>
+            <button class="size-btn" onclick="setSize(192)">192px</button>
+            <button class="size-btn" onclick="setSize(72)">72px</button>
+        </div>
+
+        <div class="info">
+            <h3>📋 Instructions:</h3>
+            <ol>
+                <li>Customize the text (default: "PF" for PathFinder)</li>
+                <li>Click "Download All Sizes" to get all required icons</li>
+                <li>Save the downloaded icons to <code>public/icons/</code> folder</li>
+                <li>Your PWA is ready to install!</li>
+            </ol>
+            <p><strong>Tip:</strong> For a better icon, use <a href="https://www.pwabuilder.com/imageGenerator" target="_blank">PWA Builder</a> with a custom design.</p>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('iconCanvas');
+        const ctx = canvas.getContext('2d');
+        const textInput = document.getElementById('iconText');
+        const sizeSelect = document.getElementById('iconSize');
+
+        function drawIcon() {
+            const size = parseInt(sizeSelect.value);
+            canvas.width = size;
+            canvas.height = size;
+
+            // Create gradient background
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#6366f1');
+            gradient.addColorStop(1, '#9333ea');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+
+            // Add rounded corners effect
+            ctx.globalCompositeOperation = 'destination-in';
+            ctx.beginPath();
+            const radius = size * 0.2;
+            ctx.moveTo(radius, 0);
+            ctx.lineTo(size - radius, 0);
+            ctx.quadraticCurveTo(size, 0, size, radius);
+            ctx.lineTo(size, size - radius);
+            ctx.quadraticCurveTo(size, size, size - radius, size);
+            ctx.lineTo(radius, size);
+            ctx.quadraticCurveTo(0, size, 0, size - radius);
+            ctx.lineTo(0, radius);
+            ctx.quadraticCurveTo(0, 0, radius, 0);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.globalCompositeOperation = 'source-over';
+
+            // Draw text
+            const text = textInput.value || 'PF';
+            ctx.fillStyle = 'white';
+            ctx.font = `bold ${size * 0.4}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, size / 2, size / 2);
+
+            // Add graduation cap emoji if space allows
+            if (text.length <= 2) {
+                ctx.font = `${size * 0.25}px Arial`;
+                ctx.fillText('🎓', size / 2, size * 0.25);
+            }
+        }
+
+        function downloadIcon() {
+            const size = sizeSelect.value;
+            const link = document.createElement('a');
+            link.download = `icon-${size}x${size}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function setSize(size) {
+            sizeSelect.value = size;
+            drawIcon();
+        }
+
+        function downloadAllSizes() {
+            const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+            const originalSize = sizeSelect.value;
+            
+            sizes.forEach((size, index) => {
+                setTimeout(() => {
+                    sizeSelect.value = size;
+                    drawIcon();
+                    setTimeout(() => {
+                        downloadIcon();
+                    }, 100);
+                }, index * 500);
+            });
+
+            setTimeout(() => {
+                sizeSelect.value = originalSize;
+                drawIcon();
+                alert('All icons downloaded! Save them to public/icons/ folder.');
+            }, sizes.length * 500 + 500);
+        }
+
+        // Event listeners
+        textInput.addEventListener('input', drawIcon);
+        sizeSelect.addEventListener('change', drawIcon);
+
+        // Initial draw
+        drawIcon();
+    </script>
+</body>
+</html>

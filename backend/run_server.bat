@@ -1,0 +1,3 @@
+@echo off
+echo Starting PathFinder Backend API...
+python app.py

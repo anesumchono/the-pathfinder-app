@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test PathFinder Backend</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        button:hover {
+            background: #4f46e5;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f0f4ff;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 PathFinder Backend Test</h1>
+    
+    <h2>Test 1: Health Check</h2>
+    <button onclick="testHealth()">Test Health Endpoint</button>
+    
+    <h2>Test 2: Career Analysis</h2>
+    <button onclick="testAnalysis()">Test Analysis Endpoint</button>
+    
+    <div id="result"></div>
+
+    <script>
+        const resultDiv = document.getElementById('result');
+
+        async function testHealth() {
+            resultDiv.textContent = 'Testing health endpoint...';
+            resultDiv.className = '';
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/health');
+                const data = await response.json();
+                
+                resultDiv.textContent = 'SUCCESS!\n\n' + JSON.stringify(data, null, 2);
+                resultDiv.className = 'success';
+            } catch (error) {
+                resultDiv.textContent = 'ERROR!\n\n' + error.message;
+                resultDiv.className = 'error';
+            }
+        }
+
+        async function testAnalysis() {
+            resultDiv.textContent = 'Testing analysis endpoint...';
+            resultDiv.className = '';
+            
+            const testData = {
+                stream: 'Sciences',
+                mathematics: 'A',
+                physics: 'B',
+                chemistry: 'A',
+                biology: 'B',
+                english: 'B',
+                attendance: 90,
+                studyHours: 4,
+                studyEnvironment: 'Quiet & Organized',
+                parentalSupport: 'Very Supportive',
+                tutoring: 'Regular Tutoring',
+                householdIncome: 'Middle Income',
+                parentsEducation: 'University Degree',
+                accessToResources: 'Full Access (Books, Internet, Computer)',
+                physicalHealth: 'Excellent',
+                mentalHealth: 'Very Positive',
+                motivationLevel: 'Highly Motivated',
+                careerInterest: 'Very Clear Goals',
+                favoriteSubjects: ['Mathematics', 'Science'],
+                skills: ['Problem Solving', 'Technical Skills'],
+                hobbies: 'Programming and robotics'
+            };
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(testData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.textContent = 'SUCCESS!\n\nReceived ' + data.careerPaths.length + ' career recommendations:\n\n' + 
+                        data.careerPaths.map((c, i) => `${i+1}. ${c.title}`).join('\n');
+                    resultDiv.className = 'success';
+                } else {
+                    resultDiv.textContent = 'ERROR!\n\n' + JSON.stringify(data, null, 2);
+                    resultDiv.className = 'error';
+                }
+            } catch (error) {
+                resultDiv.textContent = 'ERROR!\n\n' + error.message + '\n\nMake sure the backend is running on http://localhost:5000';
+                resultDiv.className = 'error';
+            }
+        }
+    </script>
+</body>
+</html>
