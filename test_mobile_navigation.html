@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Navigation Test - PathFinder</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 25%, #90caf9 50%, #64b5f6 75%, #42a5f5 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #1976d2;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .status {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+        }
+        
+        .test-button {
+            width: 100%;
+            padding: 16px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 8px;
+            background: #2196f3;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            -webkit-tap-highlight-color: rgba(33, 150, 243, 0.3);
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            touch-action: manipulation;
+            transition: all 0.2s ease;
+        }
+        
+        .test-button:active {
+            background: #1976d2;
+            transform: scale(0.98);
+        }
+        
+        .test-button.secondary {
+            background: #64b5f6;
+        }
+        
+        .test-button.secondary:active {
+            background: #42a5f5;
+        }
+        
+        .log {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+        
+        .clear-log {
+            background: #ff5722;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        
+        .app-link {
+            display: block;
+            text-align: center;
+            background: #4caf50;
+            color: white;
+            text-decoration: none;
+            padding: 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+        
+        .device-info {
+            font-size: 12px;
+            color: #666;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 Mobile Navigation Test</h1>
+        
+        <div class="device-info">
+            <strong>Device Info:</strong><br>
+            User Agent: <span id="userAgent"></span><br>
+            Screen: <span id="screenSize"></span><br>
+            Touch Support: <span id="touchSupport"></span>
+        </div>
+        
+        <div class="status">
+            <strong>🎯 Purpose:</strong> Test mobile button functionality before testing the main app
+        </div>
+        
+        <div class="test-section">
+            <h3>Touch Event Tests</h3>
+            <button class="test-button" onclick="logEvent('Button 1 clicked')">Test Button 1</button>
+            <button class="test-button secondary" onclick="logEvent('Button 2 clicked')">Test Button 2</button>
+            <button class="test-button" 
+                    ontouchstart="logEvent('Touch start')" 
+                    ontouchend="logEvent('Touch end')" 
+                    onclick="logEvent('Click event')">
+                Touch Events Button
+            </button>
+        </div>
+        
+        <div class="test-section">
+            <h3>Event Log</h3>
+            <div id="eventLog" class="log">Ready for testing...\n</div>
+            <button class="clear-log" onclick="clearLog()">Clear Log</button>
+        </div>
+        
+        <a href="http://localhost:5174" class="app-link">
+            🚀 Open PathFinder App
+        </a>
+        
+        <div style="margin-top: 20px; text-align: center; font-size: 12px; color: #666;">
+            <p>If buttons work here but not in the app, there's a React/event handling issue.</p>
+            <p>If buttons don't work here, it's a device/browser issue.</p>
+        </div>
+    </div>
+
+    <script>
+        // Display device info
+        document.getElementById('userAgent').textContent = navigator.userAgent.substring(0, 50) + '...';
+        document.getElementById('screenSize').textContent = `${screen.width}x${screen.height}`;
+        document.getElementById('touchSupport').textContent = 'ontouchstart' in window ? 'Yes' : 'No';
+        
+        function logEvent(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const log = document.getElementById('eventLog');
+            log.textContent += `[${timestamp}] ${message}\n`;
+            log.scrollTop = log.scrollHeight;
+            
+            // Visual feedback
+            console.log('Event logged:', message);
+        }
+        
+        function clearLog() {
+            document.getElementById('eventLog').textContent = 'Log cleared...\n';
+        }
+        
+        // Add touch event listeners for debugging
+        document.addEventListener('touchstart', function(e) {
+            logEvent(`Touch start on: ${e.target.tagName}`);
+        });
+        
+        document.addEventListener('touchend', function(e) {
+            logEvent(`Touch end on: ${e.target.tagName}`);
+        });
+        
+        document.addEventListener('click', function(e) {
+            logEvent(`Click on: ${e.target.tagName}`);
+        });
+        
+        // Log when page loads
+        window.addEventListener('load', function() {
+            logEvent('Page loaded successfully');
+        });
+    </script>
+</body>
+</html>
+</text>
+</invoke>

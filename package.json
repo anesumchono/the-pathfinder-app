@@ -1,16 +1,16 @@
 {
-  "name": "phisher_66",
-  "version": "1.0.0",
-  "description": "",
+  "name": "pathfinder_enhanced",
+  "version": "2.0.0",
+  "description": "Enhanced AI-powered career guidance platform with comprehensive features",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["career", "guidance", "education", "AI", "PWA", "mentorship", "scholarships"],
+  "author": "PathFinder Team",
+  "license": "MIT",
   "dependencies": {
     "@react-oauth/google": "^0.13.4",
     "jwt-decode": "^4.0.0",

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Connection Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .test-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+        }
+        .status {
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .success { background: rgba(0, 255, 136, 0.2); border: 1px solid #00ff88; }
+        .error { background: rgba(255, 0, 0, 0.2); border: 1px solid #ff0000; }
+        .loading { background: rgba(255, 255, 0, 0.2); border: 1px solid #ffff00; }
+        button {
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover { transform: translateY(-2px); }
+        .url { 
+            background: rgba(0, 0, 0, 0.3); 
+            padding: 10px; 
+            border-radius: 5px; 
+            font-family: monospace; 
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <h1>📱 Mobile Connection Test</h1>
+    
+    <div class="test-container">
+        <h2>🌐 Network URLs</h2>
+        <p><strong>Frontend:</strong></p>
+        <div class="url">http://192.168.1.236:5174/</div>
+        
+        <p><strong>Backend API:</strong></p>
+        <div class="url">http://192.168.1.236:5000/api/health</div>
+    </div>
+    
+    <div class="test-container">
+        <h2>🔍 Connection Tests</h2>
+        
+        <button onclick="testFrontend()">Test Frontend</button>
+        <button onclick="testBackend()">Test Backend</button>
+        <button onclick="testBoth()">Test Both</button>
+        
+        <div id="frontend-status" class="status loading">Frontend: Not tested</div>
+        <div id="backend-status" class="status loading">Backend: Not tested</div>
+    </div>
+    
+    <div class="test-container">
+        <h2>📋 Mobile Testing Checklist</h2>
+        <ul>
+            <li>✅ Both servers are running</li>
+            <li>📱 Connect phone to same WiFi network</li>
+            <li>🌐 Open browser on phone</li>
+            <li>📝 Type: <code>http://192.168.1.236:5174/</code></li>
+            <li>🎉 Enjoy the enhanced PathFinder app!</li>
+        </ul>
+    </div>
+    
+    <div class="test-container">
+        <h2>🚀 Enhanced Features to Test</h2>
+        <ul>
+            <li>🔔 <strong>Push Notifications</strong> - Enable in Notifications tab</li>
+            <li>📊 <strong>Progress Tracking</strong> - Set and track goals</li>
+            <li>💰 <strong>Scholarship Database</strong> - Search funding opportunities</li>
+            <li>🧠 <strong>Aptitude Tests</strong> - Take career assessments</li>
+            <li>👥 <strong>Mentor Matching</strong> - Connect with professionals</li>
+            <li>📱 <strong>PWA Installation</strong> - Add to home screen</li>
+            <li>🌐 <strong>Offline Mode</strong> - Works without internet</li>
+        </ul>
+    </div>
+
+    <script>
+        async function testFrontend() {
+            const statusEl = document.getElementById('frontend-status');
+            statusEl.textContent = 'Testing frontend...';
+            statusEl.className = 'status loading';
+            
+            try {
+                const response = await fetch('http://192.168.1.236:5174/');
+                if (response.ok) {
+                    statusEl.textContent = '✅ Frontend: Connected successfully!';
+                    statusEl.className = 'status success';
+                } else {
+                    statusEl.textContent = '❌ Frontend: Connection failed';
+                    statusEl.className = 'status error';
+                }
+            } catch (error) {
+                statusEl.textContent = '❌ Frontend: ' + error.message;
+                statusEl.className = 'status error';
+            }
+        }
+        
+        async function testBackend() {
+            const statusEl = document.getElementById('backend-status');
+            statusEl.textContent = 'Testing backend...';
+            statusEl.className = 'status loading';
+            
+            try {
+                const response = await fetch('http://192.168.1.236:5000/api/health');
+                if (response.ok) {
+                    const data = await response.json();
+                    statusEl.textContent = '✅ Backend: ' + data.message;
+                    statusEl.className = 'status success';
+                } else {
+                    statusEl.textContent = '❌ Backend: Connection failed';
+                    statusEl.className = 'status error';
+                }
+            } catch (error) {
+                statusEl.textContent = '❌ Backend: ' + error.message;
+                statusEl.className = 'status error';
+            }
+        }
+        
+        async function testBoth() {
+            await testFrontend();
+            await testBackend();
+        }
+        
+        // Auto-test on page load
+        window.onload = () => {
+            setTimeout(testBoth, 1000);
+        };
+    </script>
+</body>
+</html>

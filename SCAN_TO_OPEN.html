@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PathFinder - Scan to Open on iPhone</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            text-align: center;
+            background: linear-gradient(135deg, #0f172a 0%, #1e40af 50%, #06b6d4 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #06b6d4;
+            margin-bottom: 10px;
+        }
+        .qr-container {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            display: inline-block;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .url {
+            background: #f0f9ff;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 18px;
+            color: #0369a1;
+            margin: 20px 0;
+            word-break: break-all;
+        }
+        .instructions {
+            text-align: left;
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .instructions h3 {
+            color: #0f172a;
+            margin-top: 0;
+        }
+        .instructions ol {
+            color: #475569;
+            line-height: 1.8;
+        }
+        .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #06b6d4 0%, #2563eb 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            margin: 10px 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 PathFinder on iPhone</h1>
+        <p style="color: #64748b; font-size: 18px;">Scan QR Code or Type URL</p>
+
+        <div class="badge">✅ Servers Running</div>
+        <div class="badge">📡 Network Ready</div>
+
+        <!-- QR Code -->
+        <div class="qr-container">
+            <img id="qrcode" alt="QR Code" style="width: 250px; height: 250px;">
+        </div>
+
+        <!-- URL -->
+        <div class="url" id="appUrl">
+            http://192.168.1.236:5173
+        </div>
+
+        <!-- Instructions -->
+        <div class="instructions">
+            <h3>🎯 How to Open on iPhone:</h3>
+            <ol>
+                <li><strong>Scan QR Code:</strong> Open Camera app and point at QR code above</li>
+                <li><strong>Or Type URL:</strong> Open Safari and type the URL shown above</li>
+                <li><strong>Wait:</strong> App will load in a few seconds</li>
+                <li><strong>Install:</strong> Tap Share → Add to Home Screen</li>
+            </ol>
+        </div>
+
+        <div style="margin-top: 20px; padding: 15px; background: #fef3c7; border-radius: 10px; border-left: 4px solid #f59e0b;">
+            <strong>⚠️ Important:</strong> Make sure your iPhone is on the same WiFi network as this computer!
+        </div>
+
+        <div style="margin-top: 20px; color: #64748b; font-size: 14px;">
+            <p>Need help? Read <strong>IPHONE_SETUP.md</strong></p>
+        </div>
+    </div>
+
+    <script>
+        // Generate QR code using Google Charts API
+        const url = 'http://192.168.1.236:5173';
+        const qrUrl = `https://chart.googleapis.com/chart?cht=qr&chs=250x250&chl=${encodeURIComponent(url)}`;
+        document.getElementById('qrcode').src = qrUrl;
+        
+        // Update URL display
+        document.getElementById('appUrl').textContent = url;
+    </script>
+</body>
+</html>
